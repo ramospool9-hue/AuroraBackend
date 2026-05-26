@@ -10,6 +10,10 @@ app.use(cors());
 const genius =
   new Client();
 
+// =====================
+// SEARCH
+// =====================
+
 app.get('/search', async (req, res) => {
 
   try {
@@ -92,7 +96,9 @@ app.get('/search', async (req, res) => {
         };
       });
 
-    res.json(songs);
+    res.json(
+      songs
+    );
 
   } catch (error) {
 
@@ -104,6 +110,10 @@ app.get('/search', async (req, res) => {
     });
   }
 });
+
+// =====================
+// AUDIO
+// =====================
 
 app.get('/audio/:id', async (req, res) => {
 
@@ -112,19 +122,24 @@ app.get('/audio/:id', async (req, res) => {
     const id =
       req.params.id;
 
+    const url =
+      `https://youtube.com/watch?v=${id}`;
+
     const result =
       await ytdlp(
-        `https://youtube.com/watch?v=${id}`,
+        url,
         {
           getUrl: true,
           format:
-            'bestaudio[ext=m4a]/bestaudio',
+            'bestaudio',
           noWarnings: true,
         }
       );
 
     res.json({
-      audio: result,
+
+      audio:
+        result,
     });
 
   } catch (error) {
@@ -132,11 +147,16 @@ app.get('/audio/:id', async (req, res) => {
     console.log(error);
 
     res.status(500).json({
+
       error:
         error.message,
     });
   }
 });
+
+// =====================
+// LYRICS
+// =====================
 
 app.get('/lyrics', async (req, res) => {
 
@@ -147,8 +167,6 @@ app.get('/lyrics', async (req, res) => {
 
     let artist =
       req.query.artist;
-
-    // LIMPIAR TITULO
 
     title =
       title
@@ -176,7 +194,9 @@ app.get('/lyrics', async (req, res) => {
         )}`;
 
       const response =
-        await fetch(url);
+        await fetch(
+          url
+        );
 
       const data =
         await response.json();
@@ -227,8 +247,6 @@ app.get('/lyrics', async (req, res) => {
 
     } catch (e) {}
 
-    // =====================
-
     res.json({
 
       lyrics:
@@ -247,9 +265,24 @@ app.get('/lyrics', async (req, res) => {
   }
 });
 
-app.listen(3000, '0.0.0.0', () => {
+// =====================
+// TEST
+// =====================
 
-  console.log(
-    'Servidor iniciado en puerto 3000'
+app.get('/', (req, res) => {
+
+  res.send(
+    'Aurora Backend funcionando 🚀'
   );
 });
+
+app.listen(
+  process.env.PORT || 3000,
+  '0.0.0.0',
+  () => {
+
+    console.log(
+      'Servidor iniciado 🚀'
+    );
+  }
+);
