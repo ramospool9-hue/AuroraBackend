@@ -1,17 +1,22 @@
 const express = require('express');
 const cors = require('cors');
 const yts = require('yt-search');
+
 const fetch = (...args) =>
   import('node-fetch')
-    .then(({ default: fetch }) => fetch(...args));
+    .then(({ default: fetch }) =>
+      fetch(...args)
+    );
 
-const { Client } = require('genius-lyrics');
+const { Client } =
+  require('genius-lyrics');
 
 const app = express();
 
 app.use(cors());
 
-const genius = new Client();
+const genius =
+  new Client();
 
 // =====================
 // ROOT
@@ -97,23 +102,23 @@ app.get('/audio/:id', async (req, res) => {
     const id =
       req.params.id;
 
-    const streamsResponse =
+    const response =
       await fetch(
-        `https://piped.video/api/v1/streams/${id}`
+        `https://pipedapi.kavin.rocks/streams/${id}`
       );
 
-    const streamsData =
-      await streamsResponse.json();
+    const data =
+      await response.json();
 
     const audio =
-      streamsData.audioStreams?.find(
+      data.audioStreams?.find(
         (stream) =>
           stream.mimeType?.includes(
             'audio/mp4'
           )
       )?.url
       ||
-      streamsData.audioStreams?.[0]?.url;
+      data.audioStreams?.[0]?.url;
 
     if (!audio) {
 
