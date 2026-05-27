@@ -100,6 +100,54 @@ app.get('/audio/:id', async (req, res) => {
         url,
         {
 
+          dumpSingleJson: true,
+
+          noWarnings: true,
+
+          preferFreeFormats: true,
+
+          format:
+            'bestaudio',
+        }
+      );
+
+    const audioUrl =
+      audio.url;
+
+    res.json({
+
+      audio:
+        audioUrl,
+    });
+
+  } catch (error) {
+
+    console.log(
+      'AUDIO ERROR:',
+      error
+    );
+
+    res.status(500).json({
+
+      error:
+        'Error obteniendo audio',
+    });
+  }
+});, async (req, res) => {
+
+  try {
+
+    const id =
+      req.params.id;
+
+    const url =
+      `https://www.youtube.com/watch?v=${id}`;
+
+    const audio =
+      await ytdlp(
+        url,
+        {
+
           getUrl: true,
 
           format:

@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: aurorabackend
+    env: node
+    buildCommand: |
+      apt-get update
+      apt-get install -y python3 ffmpeg
+      npm install
+    startCommand: npm start
