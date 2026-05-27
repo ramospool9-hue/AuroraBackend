@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const searchYoutube = require('youtube-search-api');
+const yts = require('yt-search');
 const ytdlp = require('yt-dlp-exec');
 const { Client } = require('genius-lyrics');
 
@@ -8,8 +8,7 @@ const app = express();
 
 app.use(cors());
 
-const genius =
-  new Client();
+const genius = new Client();
 
 // =====================
 // ROOT
@@ -33,36 +32,35 @@ app.get('/search', async (req, res) => {
     const query =
       req.query.q;
 
+    if (!query) {
+
+      return res.status(400).json({
+
+        error:
+          'Query requerida',
+      });
+    }
+
     const result =
-      await searchYoutube.GetListByKeyword(
-        query,
-        false,
-        15
-      );
+      await yts(query);
 
     const songs =
-      result.items
-        .filter(
-          (video) =>
-            video.type !==
-            'channel'
-        )
+      result.videos
+        .slice(0, 15)
         .map(
           (video) => ({
 
             id:
-              video.id,
+              video.videoId,
 
             title:
               video.title,
 
             artist:
-              video.channelTitle ||
-              'Unknown',
+              video.author.name,
 
             picture:
-              video.thumbnail?.thumbnails?.[0]?.url ||
-              '',
+              video.thumbnail,
           })
         );
 
@@ -72,7 +70,10 @@ app.get('/search', async (req, res) => {
 
   } catch (error) {
 
-    console.log(error);
+    console.log(
+      'SEARCH ERROR:',
+      error
+    );
 
     res.status(500).json({
 
@@ -150,6 +151,28 @@ app.get('/lyrics', async (req, res) => {
     let artist =
       req.query.artist;
 
+    if (
+      !title ||
+      !artist
+    ) {
+
+      return res.json({
+
+        lyrics:
+          'Letra no encontrada',
+      });
+    }
+
+    title =
+      title
+        .replace(/\(.*?\)/g, '')
+        .replace(/\[.*?\]/g, '')
+        .replace(/official/gi, '')
+        .replace(/lyrics/gi, '')
+        .replace(/audio/gi, '')
+        .replace(/video/gi, '')
+        .trim();
+
     const searches =
       await genius.songs.search(
         `${artist} ${title}`
@@ -158,9 +181,7 @@ app.get('/lyrics', async (req, res) => {
     const firstSong =
       searches[0];
 
-    if (
-      firstSong
-    ) {
+    if (firstSong) {
 
       const lyrics =
         await firstSong.lyrics();
@@ -179,7 +200,10 @@ app.get('/lyrics', async (req, res) => {
 
   } catch (error) {
 
-    console.log(error);
+    console.log(
+      'LYRICS ERROR:',
+      error
+    );
 
     res.json({
 
