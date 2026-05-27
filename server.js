@@ -104,11 +104,23 @@ app.get('/audio/:id', async (req, res) => {
 
     const response =
       await fetch(
-        `https://pipedapi.kavin.rocks/streams/${id}`
+        `https://pipedapi.syncpundit.io/streams/${id}`
       );
 
+    if (!response.ok) {
+
+      return res.status(500).json({
+
+        error:
+          'Error obteniendo stream',
+      });
+    }
+
+    const text =
+      await response.text();
+
     const data =
-      await response.json();
+      JSON.parse(text);
 
     const audio =
       data.audioStreams?.find(
