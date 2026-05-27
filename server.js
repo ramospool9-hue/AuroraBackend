@@ -1,7 +1,10 @@
 const express = require('express');
 const cors = require('cors');
 const yts = require('yt-search');
-const ytdlp = require('yt-dlp-exec');
+const fetch = (...args) =>
+  import('node-fetch')
+    .then(({ default: fetch }) => fetch(...args));
+
 const { Client } = require('genius-lyrics');
 
 const app = express();
@@ -94,32 +97,36 @@ app.get('/audio/:id', async (req, res) => {
     const id =
       req.params.id;
 
-    const url =
-      `https://www.youtube.com/watch?v=${id}`;
-
-    const info =
-      await ytdlp(
-        url,
-        {
-
-          dumpSingleJson:
-            true,
-
-          noWarnings:
-            true,
-
-          preferFreeFormats:
-            true,
-
-          format:
-            'bestaudio',
-        }
+    const streamsResponse =
+      await fetch(
+        `https://piped.video/api/v1/streams/${id}`
       );
+
+    const streamsData =
+      await streamsResponse.json();
+
+    const audio =
+      streamsData.audioStreams?.find(
+        (stream) =>
+          stream.mimeType?.includes(
+            'audio/mp4'
+          )
+      )?.url
+      ||
+      streamsData.audioStreams?.[0]?.url;
+
+    if (!audio) {
+
+      return res.status(404).json({
+
+        error:
+          'Audio no encontrado',
+      });
+    }
 
     res.json({
 
-      audio:
-        info.url,
+      audio,
     });
 
   } catch (error) {
