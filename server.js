@@ -1,7 +1,6 @@
 const express = require('express');
 const cors = require('cors');
 const searchYoutube = require('youtube-search-api');
-const ytdlp = require('yt-dlp-exec');
 const { Client } = require('genius-lyrics');
 
 const app = express();
@@ -95,7 +94,7 @@ app.get('/search', async (req, res) => {
 });
 
 // =====================
-// AUDIO REAL
+// AUDIO
 // =====================
 
 app.get('/audio/:id', async (req, res) => {
@@ -105,30 +104,10 @@ app.get('/audio/:id', async (req, res) => {
     const id =
       req.params.id;
 
-    const url =
-      `https://www.youtube.com/watch?v=${id}`;
-
-    const audio =
-      await ytdlp(
-        url,
-        {
-
-          getUrl: true,
-
-          format:
-            'bestaudio',
-
-          noWarnings:
-            true,
-
-          preferFreeFormats:
-            true,
-        }
-      );
-
     res.json({
 
-      audio,
+      audio:
+        `https://www.youtube.com/watch?v=${id}`,
     });
 
   } catch (error) {

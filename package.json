@@ -1,7 +1,7 @@
 {
   "name": "aurorabackend",
   "version": "1.0.0",
-  "description": "Aurora Music Backend",
+  "description": "Aurora Backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
@@ -12,7 +12,6 @@
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "genius-lyrics": "^4.4.7",
-    "youtube-search-api": "^2.0.1",
-    "yt-dlp-exec": "^1.0.2"
+    "youtube-search-api": "^2.0.1"
   }
 }
