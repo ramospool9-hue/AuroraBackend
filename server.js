@@ -8,7 +8,8 @@ const app = express();
 
 app.use(cors());
 
-const genius = new Client();
+const genius =
+  new Client();
 
 // =====================
 // ROOT
@@ -95,75 +96,29 @@ app.get('/audio/:id', async (req, res) => {
     const url =
       `https://www.youtube.com/watch?v=${id}`;
 
-    const audio =
+    const info =
       await ytdlp(
         url,
         {
 
-          dumpSingleJson: true,
-
-          noWarnings: true,
-
-          preferFreeFormats: true,
-
-          format:
-            'bestaudio',
-        }
-      );
-
-    const audioUrl =
-      audio.url;
-
-    res.json({
-
-      audio:
-        audioUrl,
-    });
-
-  } catch (error) {
-
-    console.log(
-      'AUDIO ERROR:',
-      error
-    );
-
-    res.status(500).json({
-
-      error:
-        'Error obteniendo audio',
-    });
-  }
-});, async (req, res) => {
-
-  try {
-
-    const id =
-      req.params.id;
-
-    const url =
-      `https://www.youtube.com/watch?v=${id}`;
-
-    const audio =
-      await ytdlp(
-        url,
-        {
-
-          getUrl: true,
-
-          format:
-            'bestaudio[ext=m4a]/bestaudio',
+          dumpSingleJson:
+            true,
 
           noWarnings:
             true,
 
           preferFreeFormats:
             true,
+
+          format:
+            'bestaudio',
         }
       );
 
     res.json({
 
-      audio,
+      audio:
+        info.url,
     });
 
   } catch (error) {
@@ -203,7 +158,9 @@ app.get('/lyrics', async (req, res) => {
     const firstSong =
       searches[0];
 
-    if (firstSong) {
+    if (
+      firstSong
+    ) {
 
       const lyrics =
         await firstSong.lyrics();
@@ -233,7 +190,7 @@ app.get('/lyrics', async (req, res) => {
 });
 
 // =====================
-// START
+// START SERVER
 // =====================
 
 const PORT =
