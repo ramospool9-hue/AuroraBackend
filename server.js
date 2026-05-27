@@ -6,6 +6,7 @@ const { Client } = require('genius-lyrics');
 const app = express();
 
 app.use(cors());
+app.use(express.json());
 
 const genius =
   new Client();
@@ -48,13 +49,25 @@ app.get('/search', async (req, res) => {
         15
       );
 
+    if (
+      !result.items
+    ) {
+
+      return res.json([]);
+    }
+
     const songs =
       result.items
+
         .filter(
           (video) =>
+
+            video &&
+            video.id &&
             video.type !==
             'channel'
         )
+
         .map(
           (video) => ({
 
@@ -62,7 +75,8 @@ app.get('/search', async (req, res) => {
               video.id,
 
             title:
-              video.title,
+              video.title ||
+              'Sin título',
 
             artist:
               video.channelTitle ||
@@ -70,7 +84,8 @@ app.get('/search', async (req, res) => {
 
             picture:
               video.thumbnail?.thumbnails?.[0]?.url ||
-              '',
+
+              'https://picsum.photos/300',
           })
         );
 
@@ -101,13 +116,12 @@ app.get('/audio/:id', async (req, res) => {
 
   try {
 
-    const id =
-      req.params.id;
+    // MP3 REAL DE PRUEBA
 
     res.json({
 
       audio:
-        `https://www.youtube.com/watch?v=${id}`,
+        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
     });
 
   } catch (error) {
