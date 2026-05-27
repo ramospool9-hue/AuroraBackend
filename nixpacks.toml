@@ -2,7 +2,7 @@
 nixPkgs = ["nodejs", "python3"]
 
 [phases.install]
-cmds = ["npm install"]
+cmds = ["npm install --no-package-lock"]
 
 [start]
 cmd = "node server.js"
