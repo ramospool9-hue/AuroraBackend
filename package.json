@@ -1,20 +1,25 @@
 {
   "name": "aurorabackend",
   "version": "1.0.0",
-  "description": "",
+  "description": "Aurora Music Backend",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "dev": "node server.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
   "dependencies": {
-    "cors": "^2.8.6",
-    "express": "^5.2.1",
+    "cors": "^2.8.5",
+    "express": "^4.21.2",
     "genius-lyrics": "^4.4.7",
     "lyrics-finder": "^21.7.0",
-    "youtube-search-api": "^1.2.2"
+    "youtube-search-api": "^1.2.2",
+    "yt-dlp-exec": "^1.0.2"
   }
 }
