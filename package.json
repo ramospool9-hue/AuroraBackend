@@ -1,19 +1,15 @@
 {
   "name": "aurorabackend",
   "version": "1.0.0",
-  "description": "Aurora Backend",
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^4.21.2",
     "genius-lyrics": "^4.4.7",
-    "youtube-search-api": "^2.0.1"
+    "youtube-search-api": "^1.2.2",
+    "yt-dlp-exec": "^1.0.2"
   }
 }

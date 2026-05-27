@@ -1,15 +1,14 @@
 const express = require('express');
 const cors = require('cors');
 const searchYoutube = require('youtube-search-api');
+const ytdlp = require('yt-dlp-exec');
 const { Client } = require('genius-lyrics');
 
 const app = express();
 
 app.use(cors());
-app.use(express.json());
 
-const genius =
-  new Client();
+const genius = new Client();
 
 // =====================
 // ROOT
@@ -33,15 +32,6 @@ app.get('/search', async (req, res) => {
     const query =
       req.query.q;
 
-    if (!query) {
-
-      return res.status(400).json({
-
-        error:
-          'Query requerida',
-      });
-    }
-
     const result =
       await searchYoutube.GetListByKeyword(
         query,
@@ -49,25 +39,13 @@ app.get('/search', async (req, res) => {
         15
       );
 
-    if (
-      !result.items
-    ) {
-
-      return res.json([]);
-    }
-
     const songs =
       result.items
-
         .filter(
           (video) =>
-
-            video &&
-            video.id &&
             video.type !==
             'channel'
         )
-
         .map(
           (video) => ({
 
@@ -75,8 +53,7 @@ app.get('/search', async (req, res) => {
               video.id,
 
             title:
-              video.title ||
-              'Sin título',
+              video.title,
 
             artist:
               video.channelTitle ||
@@ -84,8 +61,7 @@ app.get('/search', async (req, res) => {
 
             picture:
               video.thumbnail?.thumbnails?.[0]?.url ||
-
-              'https://picsum.photos/300',
+              '',
           })
         );
 
@@ -95,10 +71,7 @@ app.get('/search', async (req, res) => {
 
   } catch (error) {
 
-    console.log(
-      'SEARCH ERROR:',
-      error
-    );
+    console.log(error);
 
     res.status(500).json({
 
@@ -109,19 +82,40 @@ app.get('/search', async (req, res) => {
 });
 
 // =====================
-// AUDIO
+// AUDIO REAL
 // =====================
 
 app.get('/audio/:id', async (req, res) => {
 
   try {
 
-    // MP3 REAL DE PRUEBA
+    const id =
+      req.params.id;
+
+    const url =
+      `https://www.youtube.com/watch?v=${id}`;
+
+    const audio =
+      await ytdlp(
+        url,
+        {
+
+          getUrl: true,
+
+          format:
+            'bestaudio[ext=m4a]/bestaudio',
+
+          noWarnings:
+            true,
+
+          preferFreeFormats:
+            true,
+        }
+      );
 
     res.json({
 
-      audio:
-        'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3',
+      audio,
     });
 
   } catch (error) {
@@ -153,28 +147,6 @@ app.get('/lyrics', async (req, res) => {
     let artist =
       req.query.artist;
 
-    if (
-      !title ||
-      !artist
-    ) {
-
-      return res.json({
-
-        lyrics:
-          'Letra no encontrada',
-      });
-    }
-
-    title =
-      title
-        .replace(/\(.*?\)/g, '')
-        .replace(/\[.*?\]/g, '')
-        .replace(/official/gi, '')
-        .replace(/lyrics/gi, '')
-        .replace(/audio/gi, '')
-        .replace(/video/gi, '')
-        .trim();
-
     const searches =
       await genius.songs.search(
         `${artist} ${title}`
@@ -183,20 +155,15 @@ app.get('/lyrics', async (req, res) => {
     const firstSong =
       searches[0];
 
-    if (
-      firstSong
-    ) {
+    if (firstSong) {
 
       const lyrics =
         await firstSong.lyrics();
 
-      if (lyrics) {
+      return res.json({
 
-        return res.json({
-
-          lyrics,
-        });
-      }
+        lyrics,
+      });
     }
 
     res.json({
@@ -207,10 +174,7 @@ app.get('/lyrics', async (req, res) => {
 
   } catch (error) {
 
-    console.log(
-      'LYRICS ERROR:',
-      error
-    );
+    console.log(error);
 
     res.json({
 
@@ -221,7 +185,7 @@ app.get('/lyrics', async (req, res) => {
 });
 
 // =====================
-// START SERVER
+// START
 // =====================
 
 const PORT =
